@@ -30,7 +30,7 @@ export default async function fetchSchedule(station, key) {
         "key": item.id,
         "time": item.prediction === null ? item["departure-time"] : item.prediction["departure-time"],
         "destination": item.route["direction-destinations"][0],
-        "status": ("prediction" in item)? "Pending" : item.prediction.status
+        "status": item.prediction === null ? "Pending" : item.prediction.status
       }
     }).slice(0, 10);
 
