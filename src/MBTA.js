@@ -1,5 +1,4 @@
 import Serializer from "jsonapi-serializer";
-import moment from "moment";
 
 const deserializer = new Serializer.Deserializer();
 
@@ -7,38 +6,35 @@ async function deserialize(rawJSONAPIResult) {
   return await deserializer.deserialize(rawJSONAPIResult);
 }
 
-export default async function fetchSchedule(station, key) {
-  const query =
-`https://api-v3.mbta.com/schedules/
+export default async function fetchSchedule(station) {
+    const query = `https://api-v3.mbta.com/predictions/
 ?filter[stop]=${station}
-&filter[min_time]=${moment().format("HH:mm")}
-&filter[max_time]=24:00
-&sort=departure_time
-&include=prediction,route,stop,trip
-&fields[schedule]=departure_time
-&fields[prediction]=departure_time,status,trip
-&fields[schedule]=arrival_time,departure_time
-&fields[route]=direction_destinations,type
+&filter[route_type]=2
+&fields[prediction]=departure_time,status
 &fields[stop]=platform_code
-&fields[trip]=direction_id`;
-  const result = (await jsonAPIQuery(query, key)).filter(item => item.route.type === 2 && item["departure-time"] !== null);
-  console.log(result[0]);
+&fields[trip]=headsign,name
+&sort=status
+&include=stop,trip
+`;
 
-  const normalizedData = result.filter(item => item.route.type === 2 && item["departure-time"] !== null)
+  const result = (await jsonAPIQuery(query)).filter(item => item["departure-time"] !== null);
+
+  const normalizedData = result
     .map(item => {
       return {
         "key": item.id,
-        "time": item.prediction === null ? item["departure-time"] : item.prediction["departure-time"],
-        "destination": item.route["direction-destinations"][0],
-        "status": item.prediction === null ? "Pending" : item.prediction.status
+        "time": item["departure-time"],
+        "destination": item.trip.headsign,
+        "trainNumber": item.trip.name,
+        "trackNumber": item.stop["platform-code"] === null ? "TBD" : item.stop["platform-code"],
+        "status": item.status,
       }
-    }).slice(0, 10);
+    });
 
   return normalizedData;
 }
 
-async function jsonAPIQuery(queryString, key) {
-  const query = queryString + (key !== "" && key !== null && key !== undefined ? `&api_key=${key}` : "");
+async function jsonAPIQuery(query) {
   const result = await fetch(query);
   const serializedResult = await result.json();
   const queryData = await deserialize(serializedResult);

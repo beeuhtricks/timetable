@@ -4,3 +4,8 @@
   align-items: center;
   justify-content: center;
 }
+
+table {
+  text-align: left;
+  border-spacing: 10px 0;
+}

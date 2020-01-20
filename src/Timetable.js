@@ -7,14 +7,14 @@ function Timetable(props) {
   const [scheduleData, setScheduleData] = useState([]);
 
   useEffect(() => {
-    fetchSchedule(props.station, props.apiKey).then(data => setScheduleData(data));
+    fetchSchedule(props.station, props.apiKey, props.predict).then(data => setScheduleData(data));
 
     const interval = setInterval(() => {
-      fetchSchedule(props.station, props.apiKey).then(data => setScheduleData(data));
-    }, 10000);
+      fetchSchedule(props.station, props.apiKey, props.predict).then(data => setScheduleData(data));
+    }, 5000);
 
     return () => clearInterval(interval);
-  }, [props.station, props.apiKey]);
+  }, [props.station, props.apiKey, props.predict]);
 
   scheduleData.forEach(obj => console.log(obj));
 
@@ -26,6 +26,7 @@ function Timetable(props) {
           <tr>
             <th>Time</th>
             <th>Destination</th>
+            <th>Train#</th>
             <th>Track#</th>
             <th>Status</th>
           </tr>
@@ -36,9 +37,9 @@ function Timetable(props) {
               <TimetableRow key={item.key}
                 time={item.time}
                 destination={item.destination}
-                trackNumber="TBD"
-                status={item.status}
-              />)
+                trackNumber={item.trackNumber}
+                trainNumber={item.trainNumber}
+                status={item.status} />)
           }
         </tbody>
       </table>
@@ -50,6 +51,7 @@ function TimetableRow(props) {
     <tr>
       <td>{moment(props.time).format("h:mm A")}</td>
       <td>{props.destination}</td>
+      <td>{props.trainNumber}</td>
       <td>{props.trackNumber}</td>
       <td>{props.status}</td>
     </tr>
