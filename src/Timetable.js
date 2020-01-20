@@ -2,20 +2,19 @@ import React, { useState, useEffect } from "react";
 import moment from "moment";
 import "./App.css";
 import fetchSchedule from "./MBTA";
-import { setIntervalAsync } from "set-interval-async/dynamic";
 
 function Timetable(props) {
   const [scheduleData, setScheduleData] = useState([]);
 
   useEffect(() => {
-    const getData = async () => {
-      setScheduleData(await fetchSchedule(props.station, props.apiKey));
-    }
+    fetchSchedule(props.station, props.apiKey).then(data => setScheduleData(data));
 
-    getData();
+    const interval = setInterval(() => {
+      fetchSchedule(props.station, props.apiKey).then(data => setScheduleData(data));
+    }, 10000);
+
+    return () => clearInterval(interval);
   }, [props.station, props.apiKey]);
-
-  // setIntervalAsync(() => fetchSchedule(props.station, props.apiKey).then(item => setScheduleData(item)), 10000);
 
   scheduleData.forEach(obj => console.log(obj));
 
