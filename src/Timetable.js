@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import "./App.css";
-import fetchData from "./MBTA"
-
+import fetchSchedule from "./MBTA"
 
 function Timetable(props) {
   const [scheduleData, setScheduleData] = useState([]);
 
   useEffect(() => {
-    const fetchSchedule = async () => {
-      setScheduleData(await fetchData(props.station));
+    const getData = async () => {
+      setScheduleData(await fetchSchedule(props.station, props.apiKey));
     }
 
-    fetchSchedule();
-  }, [props.station]);
+    getData();
+  }, [props.station, props.apiKey]);
+
+  // window.setInterval(async () => setScheduleData(await fetchSchedule(props.station, props.apiKey), 10000));
+
+  scheduleData.forEach(obj => console.log(obj));
 
   return (
     <>
@@ -23,7 +26,6 @@ function Timetable(props) {
           <tr>
             <th>Time</th>
             <th>Destination</th>
-            <th>Train#</th>
             <th>Track#</th>
             <th>Status</th>
           </tr>
@@ -34,7 +36,7 @@ function Timetable(props) {
               <TimetableRow key={item.key}
                 time={item.time}
                 destination={item.destination}
-                trackNumber={item.trackNumber}
+                trackNumber="TBD"
                 status={item.status}
               />)
           }
@@ -48,7 +50,6 @@ function TimetableRow(props) {
     <tr>
       <td>{moment(props.time).format("h:mm A")}</td>
       <td>{props.destination}</td>
-      <td>Unknown</td>
       <td>{props.trackNumber}</td>
       <td>{props.status}</td>
     </tr>
