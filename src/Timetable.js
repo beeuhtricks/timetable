@@ -11,7 +11,7 @@ function Timetable(props) {
 
     const interval = setInterval(() => {
       fetchSchedule(props.station, props.apiKey, props.predict).then(data => setScheduleData(data));
-    }, 5000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [props.station, props.apiKey, props.predict]);
