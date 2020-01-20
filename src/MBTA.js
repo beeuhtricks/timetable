@@ -6,6 +6,14 @@ async function deserialize(rawJSONAPIResult) {
   return await deserializer.deserialize(rawJSONAPIResult);
 }
 
+async function jsonAPIQuery(query) {
+  const result = await fetch(query);
+  const serializedResult = await result.json();
+  const queryData = await deserialize(serializedResult);
+
+  return queryData;
+}
+
 export default async function fetchSchedule(station) {
     const query = `https://api-v3.mbta.com/predictions/
 ?filter[stop]=${station}
@@ -17,9 +25,11 @@ export default async function fetchSchedule(station) {
 &include=stop,trip
 `;
 
-  const result = (await jsonAPIQuery(query)).filter(item => item["departure-time"] !== null);
+  const queryResult = (await jsonAPIQuery(query)).filter(item => item["departure-time"] !== null);
 
-  const normalizedData = result
+  const uniqueMap = new Map();
+
+  const normalizedData = queryResult
     .map(item => {
       return {
         "key": item.id,
@@ -31,13 +41,14 @@ export default async function fetchSchedule(station) {
       }
     });
 
-  return normalizedData;
-}
+    let result = [];
 
-async function jsonAPIQuery(query) {
-  const result = await fetch(query);
-  const serializedResult = await result.json();
-  const queryData = await deserialize(serializedResult);
+    normalizedData.forEach(item => {
+      if (!uniqueMap.has(item.key)) {
+        uniqueMap.set(item.key, true);
+        result.push(item);
+      }
+    });
 
-  return queryData;
+  return result;
 }
