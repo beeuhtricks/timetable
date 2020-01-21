@@ -15,7 +15,7 @@ async function jsonAPIQuery(query) {
 }
 
 export default async function fetchSchedule(station) {
-    const query = `https://api-v3.mbta.com/predictions/
+  const query = `https://api-v3.mbta.com/predictions/
 ?filter[stop]=${station}
 &filter[route_type]=2
 &fields[prediction]=departure_time,status
@@ -41,14 +41,14 @@ export default async function fetchSchedule(station) {
       }
     });
 
-    let result = [];
+  let result = [];
 
-    normalizedData.forEach(item => {
-      if (!uniqueMap.has(item.key)) {
-        uniqueMap.set(item.key, true);
-        result.push(item);
-      }
-    });
+  normalizedData.forEach(item => {
+    if (!uniqueMap.has(item.key)) {
+      uniqueMap.set(item.key, true);
+      result.push(item);
+    }
+  });
 
   return result;
 }

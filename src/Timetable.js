@@ -7,14 +7,14 @@ function Timetable(props) {
   const [scheduleData, setScheduleData] = useState([]);
 
   useEffect(() => {
-    fetchSchedule(props.station, props.apiKey, props.predict).then(data => setScheduleData(data));
+    fetchSchedule(props.station).then(data => setScheduleData(data));
 
     const interval = setInterval(() => {
-      fetchSchedule(props.station, props.apiKey, props.predict).then(data => setScheduleData(data));
+      fetchSchedule(props.station).then(data => setScheduleData(data));
     }, 10000);
 
     return () => clearInterval(interval);
-  }, [props.station, props.apiKey, props.predict]);
+  }, [props.station]);
 
   scheduleData.forEach(obj => console.log(obj));
 
