@@ -16,8 +16,6 @@ function Timetable(props) {
     return () => clearInterval(interval);
   }, [props.station]);
 
-  scheduleData.forEach(obj => console.log(obj));
-
   return (
     <>
       <h1>{props.station === "place-north" ? "North Station" : "South Station"}</h1>
