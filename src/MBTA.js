@@ -21,7 +21,7 @@ export default async function fetchSchedule(station) {
 &fields[prediction]=departure_time,status
 &fields[stop]=platform_code
 &fields[trip]=headsign,name
-&sort=status
+&sort=departure_time
 &include=stop,trip
 `;
 
